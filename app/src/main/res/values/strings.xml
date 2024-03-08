@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">FitTrack</string>
+    <string name="trainings">Trainings</string>
+    <string name="settings">Settings</string>
+    <string name="main">Main</string>
+    <string name="darkMode">Dark Mode</string>
+    <string name="language">Language</string>
+    <string name="acomplish">Acomplish</string>
+    <string name="type">Type</string>
+    <string name="exercises">Exercises</string>
+    <string name="routines">Routines</string>
+
+</resources>

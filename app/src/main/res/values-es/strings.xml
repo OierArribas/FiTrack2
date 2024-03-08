@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FiTrack</string>
+    <string name="trainings">Entrenamientos</string>
+    <string name="settings">Ajustes</string>
+    <string name="main">Principal</string>
+    <string name="darkMode">Modo Oscuro</string>
+    <string name="language">Idioma</string>
+    <string name="acomplish">Completado</string>
+    <string name="type">Tipo</string>
+    <string name="exercises">Ejercicios</string>
+    <string name="routines">Rutina</string>
+</resources>
