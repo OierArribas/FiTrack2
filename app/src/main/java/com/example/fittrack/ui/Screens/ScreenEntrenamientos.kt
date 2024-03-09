@@ -1,7 +1,7 @@
 package com.example.fittrack.ui.Screens
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,16 +11,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,22 +31,41 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.fittrack.R
+import com.example.fittrack.Data.Entities.Ejercicio
+import com.example.fittrack.ui.Screens.Ejercicios.EjercicoDialog
+import com.example.fittrack.ui.Screens.Ejercicios.ListaEjercicios
+import com.example.fittrack.ui.ViewModels.MainViewModel
 
 @Composable
 fun ScreenEntrenamientos(
     navController: NavController,
-    string: String?
+    mainViewModel: MainViewModel
 ) {
-    SecondBodyContent(navController)
+
+
+    if (mainViewModel.ejercicioForm){
+        EjercicoDialog(mainViewModel = mainViewModel)
+    }
+
+    SecondBodyContent(navController, mainViewModel)
+    FloatingButton(onClick = {
+        mainViewModel.OpenCloseEjercicioForm(true)
+    //mainViewModel.addEjercicio(Ejercicio(nombre = "Press Banca"))
+    })
 }
 
 
 @Composable
 fun SecondBodyContent(
-    navController: NavController
+    navController: NavController,
+    mainViewModel: MainViewModel
 ) {
-    EntrenamientosDropDownMenu()
-    FloatingButton(onClick = {})
+    Column {
+        EntrenamientosDropDownMenu()
+        ListaEjercicios(mainViewModel = mainViewModel)
+    }
+
+
 }
 @Preview
 @Composable
@@ -108,7 +122,6 @@ fun FloatingButton(onClick: () -> Unit) {
             Icon(Icons.Filled.Add, "Floating action button.")
         }
     }
-
 
 
 }

@@ -1,8 +1,8 @@
-package com.example.fittrack.ui.di
+package com.example.fittrack.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.fittrack.ui.Data.InventoryDatabase
+import com.example.fittrack.Data.Database
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -10,19 +10,21 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+
 @Module
 @InstallIn(SingletonComponent::class)
-object AppModule{
+object AppModule {
 
     @Singleton
     @Provides
     fun providesDatabase(@ApplicationContext app: Context) =
-        Room.databaseBuilder(app, InventoryDatabase::class.java, "tracker")
-            .createFromAsset("database/tracker.db")
+        Room.databaseBuilder(app, Database::class.java, "Tracker")
+            .createFromAsset("database/Tracker.db")
+            //.fallbackToDestructiveMigration()
             .build()
 
     @Singleton
     @Provides
-    fun provideEjercicioDao(db: InventoryDatabase) = db.EjercicioDao()
+    fun provideSerieCatalogoDao(db:Database) = db.EjercicioDao()
 
 }

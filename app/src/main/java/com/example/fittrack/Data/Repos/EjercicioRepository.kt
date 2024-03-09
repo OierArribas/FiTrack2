@@ -1,5 +1,7 @@
-package com.example.fittrack.ui.Data
+package com.example.fittrack.Data.Repos
 
+import com.example.fittrack.Data.DAOs.EjercicioDao
+import com.example.fittrack.Data.Entities.Ejercicio
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -9,7 +11,7 @@ interface ItemsRepository {
 
     fun getAllItemsStream(): Flow<List<Ejercicio>>
 
-    fun getItemStream(nombre: String): Flow<Ejercicio?>
+    //fun getItemStream(nombre: String): Flow<Ejercicio?>
 
     suspend fun insertItem(item: Ejercicio)
 
@@ -26,7 +28,7 @@ class EjerciciosRepository @Inject constructor(
 
     override fun getAllItemsStream(): Flow<List<Ejercicio>> = ejercicioDao.getAllItems()
 
-    override fun getItemStream(nombre: String): Flow<Ejercicio?> = ejercicioDao.getItem(nombre)
+    //override fun getItemStream(nombre: String): Flow<Ejercicio?> = ejercicioDao.getItem(nombre)
 
     override suspend fun insertItem(item: Ejercicio) = ejercicioDao.insert(item)
 
