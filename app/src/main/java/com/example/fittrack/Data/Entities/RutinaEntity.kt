@@ -5,9 +5,10 @@ import androidx.room.PrimaryKey
 
 
 
-@Entity(tableName = "ejercicios")
-data class Ejercicio(
+@Entity(tableName = "rutinas")
+data class Rutina(
     @PrimaryKey
     val nombre: String,
+    val entrenamientos: String,
+    var activa: Boolean
 )
-

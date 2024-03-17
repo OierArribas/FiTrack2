@@ -1,7 +1,9 @@
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,17 +15,31 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -31,30 +47,32 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
+import com.example.fittrack.Data.Entities.Entrenamiento
+import com.example.fittrack.Data.Entities.Rutina
 import com.example.fittrack.ui.DateUtils
 import com.example.fittrack.ui.Navigation.NavItem
+import com.example.fittrack.ui.Screens.Ejercicios.DiaForm
+import com.example.fittrack.ui.Screens.Ejercicios.ItemEntrenaminento
+import com.example.fittrack.ui.ViewModels.MainViewModel
 import java.text.DateFormat
 import java.util.Calendar
 
 
 @Composable
 fun ScreenPrincipal(
-    navController: NavController
-) {
-    PrincipalBodyContent( navController)
-
-}
-
-
-
-@Composable
-fun PrincipalBodyContent(
-    navController: NavController
+    navController: NavController,
+    mainViewModel: MainViewModel
 ) {
     Column {
         ManufacturedDate()
-        DailyGoalsList()
+        if (mainViewModel.visualizarEntrenamientoDiario) {
+            DialogoEntrenamiento(mainViewModel = mainViewModel)
+        } else {
+            DailySplit(mainViewModel = mainViewModel)
+        }
+
     }
 
 
@@ -155,3 +173,173 @@ fun DailyGoal(
 }
 // Fuerza
 // Cardio
+
+
+@Composable
+fun DailySplit(
+    mainViewModel: MainViewModel
+) {
+    //val rutinaActual = mainViewModel.rutinaActiva.collectAsState(initial = Rutina("","",false))
+
+
+    val rutinaActiva by mainViewModel.rutinaActiva.collectAsState(initial = Rutina("","",false))
+
+    rutinaActiva?.let {
+
+        val splitActivo = mainViewModel.stringEntRutALista(it.entrenamientos)
+        var nombreEntrenamiento = ""
+
+        val calendar = Calendar.getInstance()
+        val diaDeLaSemana = calendar.get(Calendar.DAY_OF_WEEK)
+
+        val nombreDia = when (diaDeLaSemana) {
+            Calendar.SUNDAY -> 6
+            Calendar.MONDAY -> 0
+            Calendar.TUESDAY -> 1
+            Calendar.WEDNESDAY -> 2
+            Calendar.THURSDAY -> 3
+            Calendar.FRIDAY -> 4
+            Calendar.SATURDAY -> 5
+            else -> "Desconocido"
+        }
+
+        var contador = 0
+        for( i in splitActivo) {
+            if (contador == nombreDia) {
+                nombreEntrenamiento = i
+            }
+            contador += 1
+        }
+
+        Entr(mainViewModel = mainViewModel, entrenamieto = nombreEntrenamiento)
+
+
+
+
+
+    }
+
+
+}
+
+@Composable
+fun Entr(
+    mainViewModel: MainViewModel,
+    entrenamieto: String
+){
+    val entrenamientos by mainViewModel.lista_entrenamientos.collectAsState(initial = emptyList())
+
+    LazyColumn(
+        modifier = Modifier.padding(15.dp)
+    ){
+        items(items = entrenamientos, key = {it.nombre}){ item ->
+            if (item.nombre == entrenamieto){
+                VisualizacionEntrenamiento(mainViewModel = mainViewModel, entrenamiento = item)
+            }
+        }
+    }
+}
+
+@Composable
+fun VisualizacionEntrenamiento(
+    mainViewModel: MainViewModel,
+    entrenamiento: Entrenamiento
+){
+    Card (
+        modifier = Modifier
+            .padding(bottom = 7.dp)
+            .fillMaxWidth()
+            .clickable(onClick = {
+                mainViewModel.OpenCloseVisualizacionEntrenamientoDiario(
+                    true,
+                    entrenamiento
+                )
+            })
+
+    ){
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ){
+            Box(
+                modifier = Modifier
+                    .weight(1f) // Toma el espacio restante
+            ) {
+                Text(
+                    text = entrenamiento.nombre,
+                    fontSize = 20.sp,
+                    modifier = Modifier.padding(5.dp)
+                )
+            }
+
+        }
+    }
+}
+@Composable
+fun DialogoEntrenamiento(
+    mainViewModel: MainViewModel,
+
+) {
+    val nombreEntrenamiento = mainViewModel.nombreEntrenamientoVisualizado
+    val listaEjercicios = mainViewModel.listaEjerciciosEntrenamientoVisualizado
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        shape = RoundedCornerShape(16.dp),
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+        ) {
+            // Título y botón de minimizar
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween, // Espacio entre los elementos
+                verticalAlignment = Alignment.CenterVertically // Alineación vertical al centro
+            ) {
+                // Título del entrenamiento
+                Text(
+                    text = nombreEntrenamiento,
+                    fontSize = 20.sp,
+                    style = MaterialTheme.typography.headlineLarge,
+                    modifier = Modifier.weight(1f) // Toma el máximo ancho disponible
+                )
+                // Botón de minimizar
+                IconButton(
+                    onClick = { mainViewModel.OpenCloseVisualizacionEntrenamientoDiario(false) } // Llama a la función proporcionada para minimizar el diálogo
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowUp,
+                        contentDescription = "Minimize",
+                        tint = Color.Black // Cambia el color del icono según sea necesario
+                    )
+                }
+            }
+
+            // Divider
+            Divider(color = Color.Gray, thickness = 1.dp)
+
+            // Lista de ejercicios
+            Column(
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .align(Alignment.CenterHorizontally)
+            ) {
+                listaEjercicios.forEach { ejercicio ->
+                    Text(
+                        text = ejercicio,
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                }
+            }
+        }
+    }
+}

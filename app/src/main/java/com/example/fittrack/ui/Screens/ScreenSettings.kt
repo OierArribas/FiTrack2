@@ -179,31 +179,4 @@ fun MyComposeLayout(settingsViewModel: SettingsViewModel) {
     }
 }
 
-@Composable
-fun MiLayoutFeo(
-    settingsViewModel: SettingsViewModel
-) {
-    val sChecked = settingsViewModel.theme.collectAsState(initial = false)
 
-
-    Column (modifier = Modifier
-        .fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ){
-        Spacer(modifier = Modifier.height(100.dp))
-        Row {
-            Text(text = "Activar Tema Oscuro", fontSize = 20.sp)
-            Spacer(modifier = Modifier.width(20.dp))
-            Switch(checked = sChecked.value, onCheckedChange = {settingsViewModel.updateTheme(it)}, modifier = Modifier.height(20.dp))
-        }
-        Divider()
-
-        DrpodownIdiomas(settingsViewModel)
-        Text(
-            text = stringResource(id = R.string.trainings),
-            fontSize = 30.sp,
-
-            color = Color.DarkGray
-        )
-    }
-}

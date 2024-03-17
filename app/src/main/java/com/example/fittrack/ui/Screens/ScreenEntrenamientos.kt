@@ -11,6 +11,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -33,7 +35,11 @@ import androidx.navigation.NavController
 import com.example.fittrack.R
 import com.example.fittrack.Data.Entities.Ejercicio
 import com.example.fittrack.ui.Screens.Ejercicios.EjercicoDialog
+import com.example.fittrack.ui.Screens.Ejercicios.EntrenamientoDialog
 import com.example.fittrack.ui.Screens.Ejercicios.ListaEjercicios
+import com.example.fittrack.ui.Screens.Ejercicios.ListaEntrenamientos
+import com.example.fittrack.ui.Screens.Ejercicios.ListaRutinas
+import com.example.fittrack.ui.Screens.Ejercicios.RutinaDialog
 import com.example.fittrack.ui.ViewModels.MainViewModel
 
 @Composable
@@ -42,16 +48,22 @@ fun ScreenEntrenamientos(
     mainViewModel: MainViewModel
 ) {
 
-
-    if (mainViewModel.ejercicioForm){
-        EjercicoDialog(mainViewModel = mainViewModel)
+    when{
+        mainViewModel.ejercicioForm -> EjercicoDialog(mainViewModel = mainViewModel)
+        mainViewModel.entrenamientoForm -> EntrenamientoDialog(mainViewModel = mainViewModel)
+        mainViewModel.rutinaForm -> RutinaDialog(mainViewModel = mainViewModel)
     }
+   
 
     SecondBodyContent(navController, mainViewModel)
-    FloatingButton(onClick = {
-        mainViewModel.OpenCloseEjercicioForm(true)
-    //mainViewModel.addEjercicio(Ejercicio(nombre = "Press Banca"))
-    })
+
+    when {
+        mainViewModel.subPagina == "Entrenamientos" -> FloatingButton(onClick = { mainViewModel.OpenCloseEntrenamientosForm(true)})
+        mainViewModel.subPagina == "Ejercicios" -> FloatingButton(onClick = { mainViewModel.OpenCloseEjercicioForm(true)})
+        mainViewModel.subPagina == "Rutinas" -> FloatingButton(onClick = { mainViewModel.OpenCloseRutinasForm(true)})
+
+    }
+
 }
 
 
@@ -61,23 +73,35 @@ fun SecondBodyContent(
     mainViewModel: MainViewModel
 ) {
     Column {
-        EntrenamientosDropDownMenu()
-        ListaEjercicios(mainViewModel = mainViewModel)
+        EntrenamientosDropDownMenu(mainViewModel)
+
+        when {
+            mainViewModel.subPagina == "Ejercicios" -> ListaEjercicios(mainViewModel = mainViewModel)
+            mainViewModel.subPagina == "Entrenamientos" -> ListaEntrenamientos(mainViewModel = mainViewModel)
+            mainViewModel.subPagina == "Rutinas" -> ListaRutinas(mainViewModel = mainViewModel)
+        }
+
+
+
+
     }
 
 
 }
-@Preview
+
 @Composable
-fun EntrenamientosDropDownMenu() {
+fun EntrenamientosDropDownMenu(
+    mainViewModel: MainViewModel
+) {
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
-    var pagina by remember { mutableStateOf("Entrenamientos") }
+    var pagina = mainViewModel.subPagina
+
 
     Row (modifier = Modifier
         .padding(15.dp),) {
         Text(
-            text = stringResource(id = R.string.trainings),
+            text = pagina,
             fontSize = 30.sp,
 
             color = Color.DarkGray
@@ -95,6 +119,24 @@ fun EntrenamientosDropDownMenu() {
                 )
             }
 
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(id = R.string.routines)) },
+                    onClick = { mainViewModel.changeSubPagina("Rutinas") }
+                )
+                DropdownMenuItem(
+                    text = { Text(stringResource(id = R.string.trainings)) },
+                    onClick = { mainViewModel.changeSubPagina("Entrenamientos")  }
+                )
+                DropdownMenuItem(
+                    text = { Text(stringResource(id = R.string.exercises)) },
+                    onClick = { mainViewModel.changeSubPagina("Ejercicios")  }
+                )
+            }
+
 
 
         }
@@ -104,7 +146,6 @@ fun EntrenamientosDropDownMenu() {
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FloatingButton(onClick: () -> Unit) {
     Box(

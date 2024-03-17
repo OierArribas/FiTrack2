@@ -27,4 +27,13 @@ object AppModule {
     @Provides
     fun provideSerieCatalogoDao(db:Database) = db.EjercicioDao()
 
+    @Singleton
+    @Provides
+    fun provideEntrenamientosDao(db:Database) = db.EntrenamientosDao()
+
+    @Singleton
+    @Provides
+    fun provideRutinasDao(db:Database) = db.RutinasDao()
+
+
 }

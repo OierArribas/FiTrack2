@@ -120,7 +120,7 @@ fun AppNavigation(
                 ScreenSettings(navController = navController, settingsViewModel = settingsViewModel)
             }
             composable( route = NavItem.ScreenPrincipal.route) {
-                ScreenPrincipal(navController = navController)
+                ScreenPrincipal(navController = navController, mainViewModel = mainViewModel)
             }
             composable( route = NavItem.ScreenEntrenamientos.route ){
                 ScreenEntrenamientos(navController, mainViewModel = mainViewModel)

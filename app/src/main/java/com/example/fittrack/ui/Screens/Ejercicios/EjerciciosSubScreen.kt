@@ -182,12 +182,7 @@ fun ItemEjercico(
                     )
                 }
             }
-
-
-
-
         }
-
     }
 }
 

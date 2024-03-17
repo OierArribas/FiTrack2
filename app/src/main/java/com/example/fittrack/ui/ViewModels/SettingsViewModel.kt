@@ -12,6 +12,7 @@ import com.example.fittrack.ui.DataStore.MyPreferencesDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,6 +21,13 @@ class SettingsViewModel @Inject constructor(
 ) : ViewModel(){
 
 
+    var idiomaActual: Language = when (Locale.getDefault().language.lowercase()){
+        "es" -> Language.Spanish
+        "en" -> Language.English
+
+        else -> {
+            Language.Spanish}
+    }
 
 
     val theme = myPreferencesDataStore.themeFlow.map {
@@ -50,11 +58,16 @@ class SettingsViewModel @Inject constructor(
     @Composable
     fun setLanguague() {
 
-        if (this.firstTime == 1){
-            val lang = this.lang.collectAsState(initial = Language.English).value.lKey
+
+        val lang = this.lang.collectAsState(initial = idiomaActual).value.lKey
+
+        if (idiomaActual.lKey != lang){
             AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(lang))
-            this.firstTime = 0
         }
+
+
+
+
 
     }
 
