@@ -1,3 +1,7 @@
+import android.Manifest
+import android.app.NotificationManager
+import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -42,29 +46,45 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.navigation.NavController
 import com.example.fittrack.Data.Entities.Entrenamiento
 import com.example.fittrack.Data.Entities.Rutina
+//import com.example.fittrack.Manifest
+import com.example.fittrack.R
+import com.example.fittrack.WaterNotificationService
 import com.example.fittrack.ui.DateUtils
 import com.example.fittrack.ui.Navigation.NavItem
 import com.example.fittrack.ui.Screens.Ejercicios.DiaForm
 import com.example.fittrack.ui.Screens.Ejercicios.ItemEntrenaminento
 import com.example.fittrack.ui.ViewModels.MainViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberPermissionState
+//import com.google.accompanist.permissions.rememberPermissionState
 import java.text.DateFormat
 import java.util.Calendar
+import kotlin.random.Random
 
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun ScreenPrincipal(
     navController: NavController,
     mainViewModel: MainViewModel
 ) {
+
+
+
+
     Column {
         ManufacturedDate()
         if (mainViewModel.visualizarEntrenamientoDiario) {
@@ -175,6 +195,7 @@ fun DailyGoal(
 // Cardio
 
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun DailySplit(
     mainViewModel: MainViewModel
@@ -222,6 +243,7 @@ fun DailySplit(
 
 }
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun Entr(
     mainViewModel: MainViewModel,
@@ -240,20 +262,28 @@ fun Entr(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun VisualizacionEntrenamiento(
     mainViewModel: MainViewModel,
     entrenamiento: Entrenamiento
 ){
+
+    val context = LocalContext.current
+    val postNotificationPermission=
+        rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
+    val waterNotificationService=WaterNotificationService(context)
+
+
     Card (
         modifier = Modifier
             .padding(bottom = 7.dp)
             .fillMaxWidth()
             .clickable(onClick = {
-                mainViewModel.OpenCloseVisualizacionEntrenamientoDiario(
-                    true,
-                    entrenamiento
-                )
+                waterNotificationService.showBasicNotification()
+                mainViewModel.OpenCloseVisualizacionEntrenamientoDiario(true, entrenamiento)
+
             })
 
     ){
@@ -265,7 +295,7 @@ fun VisualizacionEntrenamiento(
         ){
             Box(
                 modifier = Modifier
-                    .weight(1f) // Toma el espacio restante
+                    .weight(1f)
             ) {
                 Text(
                     text = entrenamiento.nombre,
@@ -342,4 +372,31 @@ fun DialogoEntrenamiento(
             }
         }
     }
+}
+
+fun notificar(context: Context) {
+
+    val notificationManager=context.getSystemService(NotificationManager::class.java)
+
+    val notification=NotificationCompat.Builder(context,"water_notification")
+        .setContentTitle("Water Reminder")
+        .setContentText("Time to drink a glass of water")
+        .setSmallIcon(R.drawable.ic_launcher_foreground)
+        .setPriority(NotificationManager.IMPORTANCE_HIGH)
+        .setAutoCancel(true)
+
+
+    with(NotificationManagerCompat.from(context)) {
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                android.Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+
+            return
+        }
+        notify(0, notification.build())
+    }
+
+
 }

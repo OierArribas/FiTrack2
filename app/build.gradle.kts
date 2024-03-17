@@ -90,6 +90,11 @@ dependencies {
     kapt("androidx.room:room-compiler:${room_version}")
     implementation("androidx.room:room-ktx:${room_version}")
 
+    //Notifications
+    //implementation("androidx.core:core-ktx:2.2.0")
+    implementation("com.google.accompanist:accompanist-permissions:0.31.1-alpha")
+
+
 
 
 }

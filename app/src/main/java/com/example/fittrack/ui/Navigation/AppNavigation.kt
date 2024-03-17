@@ -1,6 +1,8 @@
 package com.example.fittrack.ui.Navigation
 
 import ScreenPrincipal
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -29,6 +31,7 @@ import com.example.fittrack.ui.ViewModels.MainViewModel
 import com.example.fittrack.ui.ViewModels.SettingsViewModel
 
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavigation(
