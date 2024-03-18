@@ -15,8 +15,8 @@ class WaterNotificationService(
     private val notificationManager=context.getSystemService(NotificationManager::class.java)
     fun showBasicNotification(){
         val notification=NotificationCompat.Builder(context,"water_notification")
-            .setContentTitle("Water Reminder")
-            .setContentText("Time to drink a glass of water")
+            .setContentTitle("FiTrack")
+            .setContentText("A por el entrenaminento!!")
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setPriority(NotificationManager.IMPORTANCE_HIGH)
             .setAutoCancel(true)

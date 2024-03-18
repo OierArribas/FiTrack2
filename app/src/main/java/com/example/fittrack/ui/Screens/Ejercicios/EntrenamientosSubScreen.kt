@@ -45,6 +45,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextField
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import com.example.fittrack.R
 import com.example.fittrack.ui.DataStore.Language
 
 @Composable
@@ -80,14 +82,14 @@ fun EntrenamientoDialog(
                         .padding(15.dp)
                 ){
                     Text(
-                        text = "Entrenamiento",
+                        text = stringResource(id = R.string.training),
                         fontSize = 20.sp,
                     )
                     OutlinedTextField(
                         value = nombreEntrenamiento,
                         onValueChange = { mainViewModel.cambiarNombreEntrenamiento(it)},
 
-                        label = ({ Text(text = "Nombre") }),
+                        label = ({ Text(text = stringResource(id = R.string.name)) }),
                     )
 
 
@@ -99,7 +101,7 @@ fun EntrenamientoDialog(
 
 
                         Text(
-                            text = "Ejercicios",
+                            text = stringResource(id = R.string.exercises),
                             fontSize = 20.sp,
                         )
 
@@ -116,7 +118,7 @@ fun EntrenamientoDialog(
                                     }
                                 }
                                     ,
-                                label = ({ Text(text = "Series") }),
+                                label = ({ Text(text = stringResource(id = R.string.sets)) }),
                                 modifier = Modifier.width(100.dp)
                                     //.height(40.dp)
                             )
@@ -125,7 +127,7 @@ fun EntrenamientoDialog(
                                 onClick = { mainViewModel.AddEjercicio(selectedEjercicio, series)},
                                 modifier = Modifier.padding(8.dp),
                             ) {
-                                Text("Add")
+                                Text(stringResource(id = R.string.add))
                             }
                         }
 
@@ -145,15 +147,19 @@ fun EntrenamientoDialog(
                         onClick = { mainViewModel.OpenCloseEntrenamientosForm(false) },
                         modifier = Modifier.padding(8.dp),
                     ) {
-                        Text("Dismiss")
+                        Text(stringResource(id = R.string.dimiss))
                     }
                     Button(
-                        onClick = { mainViewModel.insertEntrenamiento()
-                                  mainViewModel.OpenCloseEntrenamientosForm(false)
+                        onClick = { if (nombreEntrenamiento.length > 2){
+                            mainViewModel.insertEntrenamiento()
+                            mainViewModel.OpenCloseEntrenamientosForm(false)
+                        }
+
+
                                   },
                         modifier = Modifier.padding(8.dp),
                     ) {
-                        Text("Confirm")
+                        Text(stringResource(id = R.string.confirm))
                     }
                 }
 
@@ -228,6 +234,7 @@ fun ListaEjerciciosForm(
 
     LazyColumn(
         modifier = Modifier.padding(15.dp)
+            .height(100.dp)
     ){
         items(items = ejercicios, key = {it}){ item ->
             SubItemEjercico(mainViewModel = mainViewModel, ejercicio = item)
@@ -244,6 +251,7 @@ fun ListaEntrenamientos(
 
     LazyColumn(
         modifier = Modifier.padding(15.dp)
+
     ){
         items(items = entrenamientos, key = {it.nombre}){ item ->
             ItemEntrenaminento(mainViewModel = mainViewModel, entrenamiento = item)

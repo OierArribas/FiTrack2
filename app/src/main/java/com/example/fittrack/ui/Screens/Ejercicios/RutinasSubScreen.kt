@@ -56,6 +56,7 @@ import androidx.compose.ui.draw.clip
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -98,14 +99,14 @@ fun RutinaDialog(
                         .padding(15.dp)
                 ){
                     Text(
-                        text = "Rutina",
+                        text = stringResource(id = com.example.fittrack.R.string.routine),
                         fontSize = 20.sp,
                     )
                     OutlinedTextField(
                         value = nombreRutina,
                         onValueChange = { mainViewModel.nombreRutina = it},
 
-                        label = ({ Text(text = "Nombre")}),
+                        label = ({ Text(text = stringResource(id = com.example.fittrack.R.string.name))}),
 
                         )
                 }
@@ -138,7 +139,7 @@ fun RutinaDialog(
                         onClick = { mainViewModel.OpenCloseRutinasForm(false) },
                         modifier = Modifier.padding(8.dp),
                     ) {
-                        Text("Dismiss")
+                        Text(stringResource(id = com.example.fittrack.R.string.dimiss))
                     }
                     Button(
                         onClick = { if (nombreRutina.length > 2) {
@@ -148,7 +149,7 @@ fun RutinaDialog(
                         },
                         modifier = Modifier.padding(8.dp),
                     ) {
-                        Text("Confirm")
+                        Text(stringResource(id = com.example.fittrack.R.string.confirm))
                     }
                 }
             }
@@ -164,16 +165,16 @@ fun DiaForm(
 ) {
 
     val DiaSemana: String
-    //TODO Traducir
+
     when(label) {
 
-        0 -> DiaSemana = "Lunes"
-        1 -> DiaSemana = "Martes"
-        2 -> DiaSemana = "Miercoles"
-        3 -> DiaSemana = "Jueves"
-        4 -> DiaSemana = "Viernes"
-        5 -> DiaSemana = "Sabado"
-        6 -> DiaSemana = "Domingo"
+        0 -> DiaSemana = stringResource(id = com.example.fittrack.R.string.monday)
+        1 -> DiaSemana = stringResource(id = com.example.fittrack.R.string.tuesday)
+        2 -> DiaSemana = stringResource(id = com.example.fittrack.R.string.wensday)
+        3 -> DiaSemana = stringResource(id = com.example.fittrack.R.string.thursday)
+        4 -> DiaSemana = stringResource(id = com.example.fittrack.R.string.friday)
+        5 -> DiaSemana = stringResource(id = com.example.fittrack.R.string.saturday)
+        6 -> DiaSemana = stringResource(id = com.example.fittrack.R.string.sunday)
 
         else -> {
             DiaSemana = "error"
@@ -254,7 +255,7 @@ fun ListaRutinas(
     val rutinas by mainViewModel.rutinas.collectAsState(initial = emptyList())
     val rutinaActiva by mainViewModel.rutinaActiva.collectAsState(initial = Rutina("","",false))
 
-    rutinaActiva?.let { Text(text = it.nombre) }
+    //rutinaActiva?.let {  }
     LazyColumn(
         modifier = Modifier.padding(15.dp)
     ){
@@ -264,66 +265,6 @@ fun ListaRutinas(
     }
 }
 
-@Composable
-fun ItemRutina(
-    mainViewModel: MainViewModel,
-    rutina: Rutina
-){
-    Card (
-        modifier = Modifier
-            .padding(bottom = 7.dp)
-            .fillMaxWidth()
-            .clickable(onClick = {
-                mainViewModel.OpenCloseRutinasForm(true, rutina)
-            })
-    ){
-        Row (
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ){
-            Box(
-                modifier = Modifier
-                    .weight(1f) // Toma el espacio restante
-            ) {
-                Text(
-                    text = rutina.nombre,
-                    fontSize = 20.sp,
-                    modifier = Modifier.padding(5.dp)
-                )
-            }
-
-            // Otro elemento en la fila que se alinea a la derecha
-            Box() {
-                Switch(
-                    checked = rutina.activa,
-                    onCheckedChange = {
-                        rutina.activa = true
-
-                    },
-                    modifier = Modifier.padding(15.dp)
-
-                )
-                IconButton(
-                    onClick = {
-                        mainViewModel.deleteRutina(rutina)
-                        mainViewModel.OpenCloseRutinasForm(false)
-                    },
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete",
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .clip(MaterialTheme.shapes.small)
-                            .padding(4.dp)
-                    )
-                }
-            }
-        }
-    }
-}
 
 
 @Composable
@@ -364,7 +305,7 @@ fun ItemRutina2(
                     .padding(end = 8.dp)
             ) {
                 Switch(
-                    checked = sChecked,
+                    checked = (mainViewModel.esRutinaActiva(rutina) || rutina.activa),
                     onCheckedChange = {
                         sChecked = !sChecked
                         rutina.activa = sChecked

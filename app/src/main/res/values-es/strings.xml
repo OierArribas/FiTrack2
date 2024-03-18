@@ -9,5 +9,20 @@
     <string name="acomplish">Completado</string>
     <string name="type">Tipo</string>
     <string name="exercises">Ejercicios</string>
-    <string name="routines">Rutina</string>
+    <string name="routines">Rutinas</string>
+    <string name="monday">Lunes</string>
+    <string name="thursday">Jueves</string>
+    <string name="tuesday">Martes</string>
+    <string name="wensday">Miercoles</string>
+    <string name="friday">Viernes</string>
+    <string name="saturday">Sabado</string>
+    <string name="sunday">Domingo</string>
+    <string name="name">Nombre</string>
+    <string name="confirm">Comfirmar</string>
+    <string name="dimiss">Cancelar</string>
+    <string name="sets">Series</string>
+    <string name="routine">Rutina</string>
+    <string name="exercise">Ejercicio</string>
+    <string name="training">Entrenamiento</string>
+    <string name="add">Añadir</string>
 </resources>

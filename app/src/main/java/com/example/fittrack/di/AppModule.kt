@@ -19,7 +19,7 @@ object AppModule {
     @Provides
     fun providesDatabase(@ApplicationContext app: Context) =
         Room.databaseBuilder(app, Database::class.java, "Tracker")
-            .createFromAsset("database/Tracker.db")
+            //.createFromAsset("database/Tracker.db")
             //.fallbackToDestructiveMigration()
             .build()
 

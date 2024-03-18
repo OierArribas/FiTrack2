@@ -65,9 +65,12 @@ class MainViewModel @Inject constructor(
         ejercicioForm = value
     }
     fun insertEjercicio(ejercicio: Ejercicio) {
-        viewModelScope.launch {
-            ejerciciosRepository.insertItem(ejercicio)
+        if (ejercicio.nombre.length > 0) {
+            viewModelScope.launch {
+                ejerciciosRepository.insertItem(ejercicio)
+            }
         }
+
     }
     fun submitEjercio(ejercicio: Ejercicio){
         this.insertEjercicio(ejercicio)
@@ -79,11 +82,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    suspend fun getEjercicio(nombre: String): Ejercicio? {
-        val lista = ejercicios.first()
-        return lista.find { it.nombre == nombre }
-
-    }
 
     //----------------------------------------------------------//
     // --------------Entrenamientos Form-----------------------//
@@ -128,13 +126,17 @@ class MainViewModel @Inject constructor(
     }
 
     fun AddEjercicio(nombre: String, numSeries: String) {
-        listaEjercicios = listaEjercicios + " " + nombre + " " + numSeries
-        listEjercicios.add(nombre + " " + numSeries)
+        listaEjercicios = listaEjercicios + "," + nombre + "," + numSeries
+        val input = nombre + " " + numSeries
+        if (!(input in listEjercicios) and (nombre.length>0) and (numSeries.length>0)){
+            listEjercicios.add(nombre + " " + numSeries)
+        }
+
     }
 
     fun insertEntrenamiento(){
 
-        val inputEjercicios = listEjercicios.joinToString(separator = " ")
+        val inputEjercicios = concatenarLista(listEjercicios)
 
         if (edicion) {
             viewModelScope.launch {
@@ -157,14 +159,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun getEntrenamiento(nombre: String): List<String> {
-        var ejercicios = ""
-        viewModelScope.launch {
-            ejercicios = entrenamientosRepository.getItemStream(nombre).first()?.ejercicios.toString()
-        }
-
-        return stringALista(ejercicios)
-    }
 
     fun borrarSubEjercicio(ejercicio: String) {
         listEjercicios.removeIf { it == ejercicio }
@@ -172,26 +166,28 @@ class MainViewModel @Inject constructor(
     }
 
     private fun concatenarLista(lista: List<String>): String {
-        return lista.joinToString(separator = " ")
+        return lista.joinToString(separator = ",")
     }
 
     private fun stringALista(string: String): List<String> {
 
-        val palabras = string.split(" ")
+        val palabras = string.split(",")
 
 
         val lista = mutableListOf<String>()
 
 
-        for (i in palabras.indices step 2) {
+        for (i in palabras) {
 
+            /*
             if (i + 1 < palabras.size) {
 
                 lista.add("${palabras[i]} ${palabras[i + 1]}")
             } else {
 
                 lista.add(palabras[i])
-            }
+            }*/
+            lista.add(i)
         }
 
         return lista
@@ -220,6 +216,8 @@ class MainViewModel @Inject constructor(
     var edicionRutina by mutableStateOf(false)
 
     var rutinaForm by mutableStateOf(false)
+
+    var nombreRutinaActiva by mutableStateOf("")
 
     fun OpenCloseRutinasForm(value: Boolean, rutina: Rutina = Rutina(nombre = "", entrenamientos = "", activa = false)){
 
@@ -262,7 +260,7 @@ class MainViewModel @Inject constructor(
 
         val inputEntrenamientos = concatenarLista(listEntrenamientos)
 
-        if (edicion) {
+        if (edicionRutina) {
             viewModelScope.launch {
                 rutinasRepository.updateItem(Rutina(nombre = nombreRutina, entrenamientos = inputEntrenamientos, activa = false))
 
@@ -291,12 +289,13 @@ class MainViewModel @Inject constructor(
             }
 
             rutinasRepository.updateItem(rutinaNueva)
+            nombreRutinaActiva = rutinaNueva.nombre
 
         }
     }
 
     fun stringEntRutALista(string: String): MutableList<String> {
-        val lista = string.split(" ")
+        val lista = string.split(",")
         var result = mutableListOf<String>()
 
         for ( i in 0..lista.size-1){
@@ -306,32 +305,12 @@ class MainViewModel @Inject constructor(
 
     }
 
-    fun getSplitActivo(): MutableList<String> {
-
-        var split = ""
-
-        viewModelScope.launch {
-            val rutinaAct = rutinaActiva.firstOrNull()
-            if (rutinaAct != null){
-                split = rutinaAct.entrenamientos
-
-            }
-        }
-
-        return if(split == ""){
-            mutableListOf("","","","","","","aaa")
-        } else {
-            mutableListOf("","","","","","","ssss")
-        //stringEntRutALista(split)
-        }
-
-
+    fun esRutinaActiva(rutina: Rutina): Boolean{
+        return (rutina.nombre==nombreRutinaActiva)
     }
 
-    fun getEntrenamientoDiario(rutina: Rutina, dia: Int): String {
-        val split = rutina.entrenamientos
-        return stringALista(split)[dia]
-    }
+
+
 
     //----------------------------------------------------------//
     // -----------------------Principal------------------------//

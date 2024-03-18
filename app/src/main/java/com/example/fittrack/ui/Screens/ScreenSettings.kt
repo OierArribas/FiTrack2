@@ -169,11 +169,7 @@ fun MyComposeLayout(settingsViewModel: SettingsViewModel) {
 
 
         }
-        Button(onClick = {
-            AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(lang.lKey))
-        }) {
 
-        }
 
 
     }

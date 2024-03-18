@@ -95,13 +95,20 @@ fun EntrenamientosDropDownMenu(
 ) {
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
-    var pagina = mainViewModel.subPagina
+    val pagina = mainViewModel.subPagina
+    val nombrePagina: String
+    when (pagina){
+        "Ejercicios" -> nombrePagina = stringResource(id = R.string.exercises)
+        "Entrenamientos" -> nombrePagina = stringResource(id = R.string.trainings)
+        "Rutinas" -> nombrePagina = stringResource(id = R.string.routines)
+        else -> nombrePagina = ""
+    }
 
 
     Row (modifier = Modifier
         .padding(15.dp),) {
         Text(
-            text = pagina,
+            text = nombrePagina,
             fontSize = 30.sp,
 
             color = Color.DarkGray
