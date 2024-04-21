@@ -5,6 +5,8 @@ plugins {
     id ("kotlin-kapt")
     id ("com.google.dagger.hilt.android")
     id ("com.google.devtools.ksp")
+
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -53,6 +55,8 @@ android {
     }
 }
 
+val composeVersion by extra("1.1.0-alpha05")
+
 dependencies {
 
     implementation("androidx.core:core-ktx:1.12.0")
@@ -66,6 +70,7 @@ dependencies {
     implementation("androidx.navigation:navigation-runtime-ktx:2.7.7")
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation("com.google.firebase:firebase-crashlytics-buildtools:2.9.9")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -95,6 +100,29 @@ dependencies {
     implementation("com.google.accompanist:accompanist-permissions:0.31.1-alpha")
 
 
+
+    //retrofit2
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
+
+    //camara
+    val cameraxVersion = "1.3.0-rc01"
+
+    implementation("androidx.camera:camera-core:$cameraxVersion")
+    implementation("androidx.camera:camera-camera2:$cameraxVersion")
+    implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
+
+    implementation("androidx.camera:camera-view:$cameraxVersion")
+    implementation("androidx.camera:camera-extensions:$cameraxVersion")
+
+
+    implementation("androidx.compose.material:material-icons-core:$composeVersion")
+    implementation("androidx.compose.material:material-icons-extended:$composeVersion")
+
+    implementation(platform("com.google.firebase:firebase-bom:32.8.1"))
+    implementation("com.google.firebase:firebase-messaging-ktx")
 
 
 }

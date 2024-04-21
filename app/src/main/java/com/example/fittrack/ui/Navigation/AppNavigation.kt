@@ -1,9 +1,11 @@
 package com.example.fittrack.ui.Navigation
 
 import ScreenPrincipal
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -18,6 +20,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -25,8 +28,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.fittrack.R
 import com.example.fittrack.ui.DataStore.Language
+import com.example.fittrack.ui.Screens.Camera
+import com.example.fittrack.ui.Screens.LoginScreen
 import com.example.fittrack.ui.Screens.ScreenEntrenamientos
 import com.example.fittrack.ui.Screens.ScreenSettings
+import com.example.fittrack.ui.ViewModels.LoginViewModel
 import com.example.fittrack.ui.ViewModels.MainViewModel
 import com.example.fittrack.ui.ViewModels.SettingsViewModel
 
@@ -36,10 +42,14 @@ import com.example.fittrack.ui.ViewModels.SettingsViewModel
 @Composable
 fun AppNavigation(
     settingsViewModel: SettingsViewModel,
-    mainViewModel: MainViewModel
+    mainViewModel: MainViewModel,
+    loginViewModel: LoginViewModel,
+    applicationContext: Context,
 ) {
     val navController = rememberNavController()
     val lang by settingsViewModel.lang.collectAsState(initial = Language.Spanish)
+    val navStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navStackEntry?.destination
 
 
 
@@ -73,49 +83,73 @@ fun AppNavigation(
             )
         },
 
-        bottomBar = {
-            NavigationBar {
-                val navStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navStackEntry?.destination
+            bottomBar =
+            {
+                if (currentDestination?.hierarchy?.any { it.route == NavItem.LoginScreen.route } == false) {
 
 
-                NavigationBarItem(
-                    selected = currentDestination?.hierarchy?.any { it.route == NavItem.ScreenSettings.route} ==true,
-                    onClick = {
+                        NavigationBar {
+                            val navStackEntry by navController.currentBackStackEntryAsState()
+                            val currentDestination = navStackEntry?.destination
 
-                        if (currentDestination?.hierarchy?.any { it.route == NavItem.ScreenSettings.route} == false) {
-                            navController.navigate(route = NavItem.ScreenSettings.route)
+
+                            NavigationBarItem(
+                                selected = currentDestination?.hierarchy?.any { it.route == NavItem.ScreenSettings.route } == true,
+                                onClick = {
+
+                                    if (currentDestination?.hierarchy?.any { it.route == NavItem.ScreenSettings.route } == false) {
+                                        navController.navigate(route = NavItem.ScreenSettings.route)
+                                    }
+
+                                },
+                                icon = {
+                                    Icon(
+                                        imageVector = NavItem.ScreenSettings.icon,
+                                        contentDescription = "hola"
+                                    )
+                                })
+
+                            NavigationBarItem(
+                                selected = currentDestination?.hierarchy?.any { it.route == NavItem.ScreenPrincipal.route } == true,
+                                onClick = {
+
+                                    if (currentDestination?.hierarchy?.any { it.route == NavItem.ScreenPrincipal.route } == false) {
+                                        navController.navigate(route = NavItem.ScreenPrincipal.route)
+                                    }
+
+                                },
+                                icon = {
+                                    Icon(
+                                        imageVector = NavItem.ScreenPrincipal.icon,
+                                        contentDescription = "hola"
+                                    )
+                                })
+
+                            NavigationBarItem(
+                                selected = currentDestination?.hierarchy?.any { it.route == NavItem.ScreenEntrenamientos.route } == true,
+                                onClick = {
+
+                                    if (currentDestination?.hierarchy?.any { it.route == NavItem.ScreenEntrenamientos.route } == false) {
+                                        navController.navigate(route = NavItem.ScreenEntrenamientos.route)
+                                    }
+
+                                },
+                                icon = {
+                                    Icon(
+                                        imageVector = NavItem.ScreenEntrenamientos.icon,
+                                        contentDescription = "hola"
+                                    )
+                                })
                         }
+                    }
 
-                    }, icon = {Icon(imageVector = NavItem.ScreenSettings.icon, contentDescription = "hola") })
 
-                NavigationBarItem(
-                    selected = currentDestination?.hierarchy?.any { it.route == NavItem.ScreenPrincipal.route} == true,
-                    onClick = {
-
-                        if (currentDestination?.hierarchy?.any { it.route == NavItem.ScreenPrincipal.route} == false) {
-                            navController.navigate(route = NavItem.ScreenPrincipal.route)
-                        }
-
-                    },
-                    icon = { Icon(imageVector = NavItem.ScreenPrincipal.icon, contentDescription = "hola")})
-
-                NavigationBarItem(
-                    selected = currentDestination?.hierarchy?.any { it.route == NavItem.ScreenEntrenamientos.route} ==true,
-                    onClick = {
-
-                        if (currentDestination?.hierarchy?.any { it.route == NavItem.ScreenEntrenamientos.route} == false) {
-                            navController.navigate(route = NavItem.ScreenEntrenamientos.route)
-                        }
-
-                    }, icon = {Icon(imageVector = NavItem.ScreenEntrenamientos.icon, contentDescription = "hola") })
             }
-        }
     ) { paddingValues ->
 
         NavHost(
                 navController = navController,
-                startDestination = NavItem.ScreenPrincipal.route,
+                startDestination = NavItem.LoginScreen.route,
                 modifier = Modifier
                     .padding(paddingValues)
         ){
@@ -123,14 +157,21 @@ fun AppNavigation(
                 ScreenSettings(navController = navController, settingsViewModel = settingsViewModel)
             }
             composable( route = NavItem.ScreenPrincipal.route) {
-                ScreenPrincipal(navController = navController, mainViewModel = mainViewModel)
+                ScreenPrincipal(navController = navController, mainViewModel = mainViewModel, loginViewModel = loginViewModel, applicationContext = applicationContext)
             }
             composable( route = NavItem.ScreenEntrenamientos.route ){
-                ScreenEntrenamientos(navController, mainViewModel = mainViewModel)
+                ScreenEntrenamientos(navController = navController, mainViewModel = mainViewModel)
+            }
+            composable( route = NavItem.LoginScreen.route ){
+                LoginScreen(navController = navController, loginViewModel = loginViewModel)
+            }
+            composable( route = NavItem.Camera.route ){
+                Camera(navController = navController, loginViewModel = loginViewModel, applicationContext = applicationContext)
             }
 
 
         }
+
 
 
 

@@ -1,5 +1,6 @@
 package com.example.fittrack.ui.ViewModels
 
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -17,10 +18,18 @@ import com.example.fittrack.Data.Repos.EntrenamientosRepository
 import com.example.fittrack.Data.Repos.RutinasRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import android.util.Base64
+import android.util.Log
+import java.io.ByteArrayOutputStream
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import java.io.ByteArrayInputStream
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -30,6 +39,9 @@ class MainViewModel @Inject constructor(
 
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
+
+
+    // ----------------- PAGINA ENTRENAMIENTOS -----------------
 
     var subPagina by mutableStateOf("Ejercicios")
 

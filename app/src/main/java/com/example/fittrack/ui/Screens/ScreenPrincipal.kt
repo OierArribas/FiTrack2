@@ -2,8 +2,10 @@ import android.Manifest
 import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,16 +17,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -46,9 +51,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,13 +70,12 @@ import com.example.fittrack.Data.Entities.Rutina
 //import com.example.fittrack.Manifest
 import com.example.fittrack.R
 import com.example.fittrack.WaterNotificationService
-import com.example.fittrack.ui.DateUtils
 import com.example.fittrack.ui.Navigation.NavItem
-import com.example.fittrack.ui.Screens.Ejercicios.DiaForm
-import com.example.fittrack.ui.Screens.Ejercicios.ItemEntrenaminento
+import com.example.fittrack.ui.ViewModels.LoginViewModel
 import com.example.fittrack.ui.ViewModels.MainViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
+import java.nio.file.attribute.UserPrincipal
 //import com.google.accompanist.permissions.rememberPermissionState
 import java.text.DateFormat
 import java.util.Calendar
@@ -79,13 +86,15 @@ import kotlin.random.Random
 @Composable
 fun ScreenPrincipal(
     navController: NavController,
-    mainViewModel: MainViewModel
+    mainViewModel: MainViewModel,
+    loginViewModel: LoginViewModel,
+    applicationContext: Context,
 ) {
 
 
-
-
     Column {
+
+        UserProfile(loginViewModel = loginViewModel, navController = navController, applicationContext = applicationContext)
         ManufacturedDate()
         if (mainViewModel.visualizarEntrenamientoDiario) {
             DialogoEntrenamiento(mainViewModel = mainViewModel)
@@ -97,6 +106,8 @@ fun ScreenPrincipal(
 
 
 }
+
+
 
 
 @Composable
@@ -127,14 +138,6 @@ fun ManufacturedDate() {
 
 }
 
-
-@Composable
-fun DailyGoalsList() {
-
-    Column() {
-        DailyGoal(entrenamieto = "Pecho Espalda", tipo = "Tipo: Entrenamiento de Fuerza" )
-    }
-}
 
 @Preview(showBackground = false)
 @Composable
@@ -399,4 +402,57 @@ fun notificar(context: Context) {
     }
 
 
+
+}
+
+@Composable
+fun UserProfile(
+    loginViewModel: LoginViewModel,
+    navController: NavController,
+    applicationContext: Context,
+    modifier: Modifier = Modifier
+
+) {
+
+
+    //painter = painterResource(R.drawable.ic_launcher_foreground)
+    Row(modifier = modifier.padding(8.dp)) {
+        // Mostrar la imagen de perfil
+
+
+        if (loginViewModel.hasPhoto){
+            Image(
+                loginViewModel.loggedUserPhoto.asImageBitmap(),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape)
+                    .clickable( onClick = { navController.navigate(route = NavItem.Camera.route)})
+
+            )
+        } else {
+            Image(
+                painter = painterResource(R.drawable.ic_launcher_foreground),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape)
+                    .clickable( onClick = { navController.navigate(route = NavItem.Camera.route)})
+
+            )
+        }
+
+
+        // Espacio entre la imagen y el texto
+        Spacer(modifier = Modifier.width(8.dp))
+
+        // Mostrar el mensaje del usuario en una caja de texto deshabilitada
+        Text(
+            text = loginViewModel.loggedUser,
+            modifier = Modifier.weight(1f),
+            color = MaterialTheme.colorScheme.primary,
+            textAlign = TextAlign.Start,
+            style = TextStyle(fontSize = 30.sp)
+        )
+    }
 }
